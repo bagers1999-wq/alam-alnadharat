@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<title>عالم النظارات</title>
+<style>
+:root{--gold:#d8b568;--bg:#101010;--card:#1b1b1b;--muted:#bdb7aa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Tahoma,sans-serif}
+header{padding:22px 16px;text-align:center;background:linear-gradient(135deg,#171717,#292217);border-bottom:1px solid #574729}
+.logo{font-size:28px;font-weight:bold;color:var(--gold)}
+header p{color:#ddd;font-size:14px}
+.hero{padding:30px 18px;text-align:center}
+.hero h1{font-size:27px;margin:8px 0;color:var(--gold)}
+.hero p{color:#ddd;line-height:1.9}
+.search{display:block;width:100%;max-width:500px;margin:18px auto;padding:13px;border-radius:12px;border:1px solid #655331;background:#202020;color:white;font-size:16px}
+.categories{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 12px 20px}
+.categories button{background:#222;color:#eee;border:1px solid #51452e;padding:10px 14px;border-radius:22px}
+.categories button.active{background:var(--gold);color:#111}
+main{max-width:1100px;margin:auto;padding:0 14px 35px}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.product{background:var(--card);border:1px solid #39332a;border-radius:14px;overflow:hidden}
+.product img{width:100%;height:155px;object-fit:cover;background:#292929}
+.info{padding:12px}
+.info h3{margin:0 0 8px;font-size:16px}
+.tag{font-size:12px;color:var(--gold)}
+.price{font-size:18px;color:var(--gold);font-weight:bold;margin:12px 0}
+.btn{display:block;text-align:center;text-decoration:none;background:var(--gold);color:#17130b;padding:11px 8px;border-radius:9px;font-weight:bold;font-size:14px}
+.note{text-align:center;color:var(--muted);font-size:12px;line-height:1.8;margin:24px 5px}
+footer{text-align:center;padding:24px 12px;background:#191919;border-top:1px solid #423724;color:#ddd}
+footer a{color:var(--gold)}
+@media(min-width:650px){.products{grid-template-columns:repeat(3,minmax(0,1fr))}.product img{height:220px}}
+@media(min-width:950px){.products{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">♧ عالم النظارات</div>
+  <p>أناقتك تبدأ من نظرتك</p>
+</header>
+
+<section class="hero">
+  <h1>اكتشف نظارتك المميزة</h1>
+  <p>تشكيلة النظارات الطبية والشمسية<br>اختر الموديل المناسب واطلب بسهولة عبر واتساب</p>
+  <input id="search" class="search" placeholder="ابحث عن نظارة..." aria-label="البحث عن النظارات">
+</section>
+
+<nav class="categories" id="categories" aria-label="تصنيفات المنتجات"></nav>
+<main>
+  <div class="products" id="products"></div>
+  <p class="note">الصور والأسعار المعروضة أمثلة تجريبية فقط. استبدلها بمنتجات محلك وأسعارها الحقيقية قبل نشر الموقع.</p>
+</main>
+
+<footer>
+  <p>عالم النظارات 👓</p>
+  <p>للاستفسار والطلب</p>
+  <a href="https://wa.me/9647726733952" target="_blank" rel="noopener">تواصل معنا عبر واتساب</a>
+</footer>
+
+<script>
+const whatsapp = "9647726733952";
+
+const categories = [
+  "الكل","طبي رجالي","طبي نسائي","أطفال",
+  "شمسي رجالي","شمسي نسائي","عدسات لاصقة"
+];
+
+// هذه بيانات تجريبية؛ غيّرها إلى منتجاتك الحقيقية.
+const products = [
+  {name:"إطار طبي كلاسيكي",category:"طبي رجالي",price:20000,image:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=600&q=80"},
+  {name:"إطار طبي أنيق",category:"طبي نسائي",price:35000,image:"https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=600&q=80"},
+  {name:"نظارة شمسية عصرية",category:"شمسي رجالي",price:40000,image:"https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=600&q=80"},
+  {name:"نظارة شمسية أنيقة",category:"شمسي نسائي",price:50000,image:"https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80"},
+  {name:"إطار أطفال",category:"أطفال",price:20000,image:"https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=600&q=80"},
+  {name:"عدسات لاصقة",category:"عدسات لاصقة",price:15000,image:"https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=600&q=80"}
+];
+
+let selected = "الكل";
+const money = n => n.toLocaleString("en-US") + " د.ع";
+
+function renderCategories(){
+  document.getElementById("categories").innerHTML =
+    categories.map(c => `<button class="${selected===c?'active':''}" data-cat="${c}">${c}</button>`).join("");
+}
+
+function renderProducts(){
+  const query = document.getElementById("search").value.trim().toLowerCase();
+  const shown = products.filter(p =>
+    (selected==="الكل" || p.category===selected) &&
+    (p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query))
+  );
+
+  document.getElementById("products").innerHTML = shown.length ? shown.map(p => {
+    const message = `السلام عليكم، أريد الاستفسار عن:\n${p.name}\nالتصنيف: ${p.category}\nالسعر المعروض: ${money(p.price)}\nهل المنتج متوفر؟`;
+    const link = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
+    return `<article class="product">
+      <img src="${p.image}" alt="${p.name}" loading="lazy">
+      <div class="info">
+        <h3>${p.name}</h3>
+        <div class="tag">${p.category}</div>
+        <div class="price">${money(p.price)}</div>
+        <a class="btn" href="${link}" target="_blank" rel="noopener">اطلب عبر واتساب</a>
+      </div>
+    </article>`;
+  }).join("") : "<p>ما لقينا منتجات مطابقة للبحث.</p>";
+}
+
+document.getElementById("categories").addEventListener("click",e=>{
+  const btn=e.target.closest("button[data-cat]");
+  if(!btn)return;
+  selected=btn.dataset.cat;
+  renderCategories();
+  renderProducts();
+});
+document.getElementById("search").addEventListener("input",renderProducts);
+
+renderCategories();
+renderProducts();
+</script>
+</body>
+</html>
